@@ -12,7 +12,7 @@ class CreateBusinessSettingsTable extends Migration
      * @return void
      */
     public function up()
-    {
+    { Schema::dropIfExists('business_settings');
         Schema::create('business_settings', function (Blueprint $table) {
             $table->id();
             $table->String('key');

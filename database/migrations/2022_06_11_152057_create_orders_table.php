@@ -13,6 +13,7 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('orders');
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->String('user_id');
