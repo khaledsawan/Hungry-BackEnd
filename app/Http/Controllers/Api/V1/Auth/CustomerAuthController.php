@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerAuthController extends Controller
 {
-    
+
 
      public function login(Request $request)
     {
@@ -33,14 +33,14 @@ class CustomerAuthController extends Controller
         if (auth()->attempt($data)) {
             //auth()->user() is coming from laravel auth:api middleware
             $token = auth()->user()->createToken('RestaurantCustomerAuth')->accessToken;
-            if(!auth()->user()->status)
-            {
-                $errors = [];
-                array_push($errors, ['code' => 'auth-003', 'message' => trans('messages.your_account_is_blocked')]);
-                return response()->json([
-                    'errors' => $errors
-                ], 403);
-            }
+            // if(!auth()->user()->status)
+            // {
+            //     $errors = [];
+            //     array_push($errors, ['code' => 'auth-003', 'message' => trans('messages.your_account_is_blocked')]);
+            //     return response()->json([
+            //         'errors' => $errors
+            //     ], 403);
+            // }
 
             return response()->json(['token' => $token, 'is_phone_verified'=>auth()->user()->is_phone_verified], 200);
         } else {

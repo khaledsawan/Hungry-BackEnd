@@ -7,10 +7,10 @@ use App\Models\User;
 use App\Models\CustomerAddress;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller{
-    
+
      public function address_list(Request $request)
     {
         return response()->json(CustomerAddress::where('user_id', $request->user()->id)->latest()->get(), 200);
@@ -19,27 +19,25 @@ class CustomerController extends Controller{
     public function info(Request $request)
     {
         $data = $request->user();
-        
+
         $data['order_count'] =0;//(integer)$request->user()->orders->count();
         $data['member_since_days'] =(integer)$request->user()->created_at->diffInDays();
         //unset($data['orders']);
         return response()->json($data, 200);
     }
-    
+
         public function add_new_address(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'contact_person_name' => 'required',
             'contact_person_number' => 'required',
             'address' => 'required',
-          
+
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => "Error with the address"], 403);
         }
-
-
         $address = [
             'user_id' => $request->user()->id,
             'contact_person_name' => $request->contact_person_name,
@@ -93,4 +91,31 @@ class CustomerController extends Controller{
         DB::table('customer_addresses')->where('user_id', $request->user()->id)->update($address);
         return response()->json(['message' => trans('messages.updated_successfully'),'zone_id'=>$zone->id], 200);
     }
+
+ public function   update_profile(Request $request){
+
+    $validator = Validator::make($request->all(), [
+
+        'f_name' => 'required',
+        'phone' => 'required|numeric|min:8',
+        'email' => 'required|email',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => 'check your fields'], 403);
+    }
+
+    $user = User::find(Auth::user()->id);
+    if($user!=null) {
+    $user->f_name=$request->f_name;
+    $user->phone=$request->phone;
+    $user->email=$request->email;
+    $user->save();
+    return response()->json(['message' => 'profile Update successfully'], 200);
+    }else{
+        return response()->json(['message' => 'Un Authorization'], 401);
+    }
+}
+
+
 }
